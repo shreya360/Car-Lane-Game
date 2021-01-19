@@ -150,7 +150,6 @@ const score = document.querySelector('.score');
             enemyCar.y= ((x+1) *350 ) * -1;
             enemyCar.style.top = enemyCar.y + "px";
             enemyCar.style.left= Math.floor(Math.random()*350) + "px";
-            enemyCar.style.background = 'blue'; 
             gameArea.appendChild(enemyCar);
 
             }
