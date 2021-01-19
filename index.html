@@ -40,7 +40,37 @@
             background: white;
             position: absolute;
             margin-left: 400px;
+        }
 
+        .score{ 
+            position: absolute;
+            font-size: 2em;
+            text-align: center;
+            top: 20px;
+            left: 50px;
+            width: 300px;
+            line-height: 80px;
+            color: rgb(243, 242, 243);
+            background-color: #10ac84;
+            box-shadow: 0 5px 5px rgb(99, 98, 98);
+            font-family: fantasy;
+        }
+
+        .startScreen{
+            position: absolute;
+            margin: auto;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+            font-size: 2em;
+            text-align: center;
+            top: 50%;
+            left: 50%;
+            width: 50%;
+            line-height: 30px;
+            color: rgb(243, 242, 243);
+            background-color: #10ac84;
+            box-shadow: 0 5px 5px rgb(99, 98, 98);
+            cursor: pointer;
         }
     </style>
 </head>
@@ -53,7 +83,7 @@
                 Arrow Keys To Move <br>
                 If You Hit Another Car You Lose</p>
         </div>
-        <div class="gameArea hide"> </div>
+        <div class="gameArea"> </div>
     </div>
 
     <script>
@@ -62,11 +92,11 @@
         const startScreen = document.querySelector('.startScreen');
         const gameArea = document.querySelector('.gameArea');
 
-        console.log(gameArea);
+        // console.log(gameArea);
 
         startScreen.addEventListener('click', start);
 
-        let player ={ speed : 5};
+        let player ={ speed : 5, score : 0};
 
         let keys ={ ArrowUp :false, ArrowDown :false, ArrowLeft :false, ArrowRight :false}
         
@@ -76,14 +106,22 @@
         function keyDown(e){
             e.preventDefault();
             keys[e.key] = true;
-            console.log(keys);
+            // console.log(keys);
         }
 
         function keyUp(e){
             e.preventDefault();
             keys[e.key] = false;
-            console.log(keys);
+            // console.log(keys);
         }
+
+        function isCollide(a,b){
+            aRect = a.getBoundingClientRect();
+            bRect = b.getBoundingClientRect();
+
+            return !((aRect.top > bRect.bottom) || (aRect.bottom < bRect.top) || (aRect.left > bRect.right) || (aRect.right < bRect.left)) 
+        }
+
 
         function movelines(){
             let lines = document.querySelectorAll('.lines');
@@ -113,14 +151,40 @@
             })
         }
 
+        function endGame(){
+            player.start=false;
+            startScreen.classList.remove('hide');
+        }
+        
+        function moveEnemy(car){
+            let enemy = document.querySelectorAll('.enemy');
+
+            enemy.forEach(function(item){
+
+                if(isCollide(car,item)){
+                    console.log ("BOOMM HITTT!!!");
+                    endGame();
+                }
+
+                if(item.y >= 750){
+                    item.y = -300;
+                    item.style.left = Math.floor(Math.random()*350) + "px";
+                }
+
+                item.y += player.speed;
+                item.style.top = item.y + "px"; 
+            })
+        }
+
         function gamePlay(){
             let car=document.querySelector('.car');
             let road = gameArea.getBoundingClientRect();
-            console.log(road)
-            if (player.start){
+            // console.log(road);
 
+            if (player.start){
                 movelines();
                 movelinestwo();
+                moveEnemy(car);
 
                 if(keys.ArrowLeft && player.x > 0 ) { player.x -= player.speed}
                 if(keys.ArrowRight && player.x < (road.width- 50)) { player.x += player.speed}
@@ -129,15 +193,19 @@
                 car.style.left = player.x + "px";
 
             window.requestAnimationFrame(gamePlay);
-             }
+            console.log(player.score++);
+
+            player.score++;
+            score.innerText = "SCORE: " + player.score;
+            }
         }   
 
         function start(){
-
-            gameArea.classList.remove('hide');
             startScreen.classList.add('hide');
+            gameArea.innerHTML="";
 
             player.start =true;
+            player.score =0;
             window.requestAnimationFrame(gamePlay);
 
             for(x=0; x<5; x++){
@@ -169,8 +237,9 @@
             for(x=0; x<3; x++){
             let enemyCar = document.createElement('div');
             enemyCar.setAttribute('class', 'enemy');
-            enemyCar.y= (x*150);
-            enemyCar.style.top = (x*150) + "px";
+            enemyCar.y= ((x+1) *350 ) * -1;
+            enemyCar.style.top = enemyCar.y + "px";
+            enemyCar.style.left= Math.floor(Math.random()*350) + "px";
             enemyCar.style.background = 'blue'; 
             gameArea.appendChild(enemyCar);
 
