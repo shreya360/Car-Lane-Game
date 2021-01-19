@@ -64,6 +64,7 @@ const score = document.querySelector('.score');
         function endGame(){
             player.start=false;
             startScreen.classList.remove('hide');
+            startScreen.innerHTML = "GAME OVER !! <br> CLICK to RESTART";
         }
         
         function moveEnemy(car){
